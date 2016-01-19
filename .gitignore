@@ -1,1 +1,8 @@
+# emacs save files
+*~
+
+# python bytecode
 *.pyc
+
+# lineprofiler files:
+*.lprof
