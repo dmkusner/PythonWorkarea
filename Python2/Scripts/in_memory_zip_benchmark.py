@@ -33,26 +33,27 @@ def timeme(func):
 
 # use @profile with "kernprof -lv SCRIPTFILE"
 #@profile
+@timeme
 def func1(zip_file):
     """
     read zip from disk
     """
     with zipfile.ZipFile(zip_file) as zf:
-        for info in zf.infolist():
-            for _ in xrange(1,10):
+        for _ in xrange(1,10):
+            for info in zf.infolist():
                 with zf.open(info,'r') as src, io.open("outfile","wb") as dst:
                     shutil.copyfileobj(src,dst)
 # end def
 
 
-#@timeme
+@timeme
 def func2(zip_file):
     """
     read zip into memory
     """
     with io.FileIO(zip_file,'r') as fd, io.BytesIO(fd.read()) as bd, zipfile.ZipFile(bd) as zd:
-        for info in zd.infolist():
-            for _ in xrange(1,10):
+        for _ in xrange(1,10):
+            for info in zd.infolist():
                 with zd.open(info,'r') as src, io.open("outfile","wb") as dst:
                     shutil.copyfileobj(src,dst)
 # end def
