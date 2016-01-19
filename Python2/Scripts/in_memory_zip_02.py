@@ -4,6 +4,9 @@
 
 import zipfile
 import io
+import os
+import sys
+
 
 class imZip(zipfile.ZipFile):
     """
@@ -43,7 +46,9 @@ class imZip(zipfile.ZipFile):
 
 
 def main():
-    zip_file = '../../data/zips/venvbin.zip'
+    script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+    data_dir = os.sep.join(script_dir.split(os.sep)[:-2] + ['data', 'zips'])
+    zip_file = os.path.join(data_dir,'venvbin.zip')
 
     with imZip(zip_file,'r') as zf:
         for info in zf.infolist():
