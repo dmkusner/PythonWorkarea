@@ -6,3 +6,6 @@
 
 # lineprofiler files:
 *.lprof
+
+# sqlite database files
+*.db
