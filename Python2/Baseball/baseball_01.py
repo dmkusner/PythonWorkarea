@@ -58,29 +58,55 @@ def create_db():
                               SA.Column('notes', SA.String(64)),
                           )
 
+    AwardsPlayers = SA.Table('AwardsPlayers', metadata,
+                             SA.Column('playerID', SA.String(64)),
+                             SA.Column('awardID', SA.String(64)),
+                             SA.Column('yearID', SA.Integer()),
+                             SA.Column('lgID', SA.String(64)),
+                             SA.Column('tie', SA.String(64)),
+                             SA.Column('notes', SA.String(64)),
+                         )
+
+    AwardsShareManagers = SA.Table('AwardsShareManagers', metadata,
+                                   SA.Column('awardID', SA.String(64)),
+                                   SA.Column('yearID', SA.Integer()),
+                                   SA.Column('lgID', SA.String(64)),
+                                   SA.Column('playerID', SA.String(64)),
+                                   SA.Column('pointsWon', SA.Integer()),
+                                   SA.Column('pointsMax', SA.Integer()),
+                                   SA.Column('votesFirst', SA.Integer()),
+                               )
+
+    AwardsSharePlayers = SA.Table('AwardsSharePlayers', metadata,
+                                  SA.Column('awardID', SA.String(64)),
+                                  SA.Column('yearID', SA.Integer()),
+                                  SA.Column('lgID', SA.String(64)),
+                                  SA.Column('playerID', SA.String(64)),
+                                  SA.Column('pointsWon', SA.Integer()),
+                                  SA.Column('pointsMax', SA.Integer()),
+                                  SA.Column('votesFirst', SA.Integer()),
+                              )
 
 
     engine = SA.create_engine('sqlite:///baseball.db')
     metadata.create_all(engine)
-
-    return engine
 # end def
 
 def main():
 
-    table_names = [ 'AllstarFull', 'Appearances', 'AwardsManagers' ]
+    table_names = [ 
+        'AllstarFull', 'Appearances', 'AwardsManagers', 'AwardsPlayers',
+        'AwardsShareManagers', 'AwardsSharePlayers',
+    ]
 
     script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
     data_dir = os.sep.join(script_dir.split(os.sep)[:-2] + ['data', 'lahman_baseball'])
 
-    engine = create_db()
+    create_db()
 
-    dataframe_dict = {}
-    
     for table in table_names:
         csv = os.path.join(data_dir, table + ".csv")
         odo.odo(csv, 'sqlite:///baseball.db::' + table)
-
 
     sys.exit(0)
 
