@@ -23,7 +23,7 @@ def create_db():
                            SA.Column('lgID', SA.String(64)),
                            SA.Column('GP', SA.Integer()),
                            SA.Column('startingPos', SA.Integer()),
-    )
+                           )
 
     Appearances = SA.Table('Appearances', metadata,
                            SA.Column('yearID', SA.Integer()),
@@ -47,7 +47,7 @@ def create_db():
                            SA.Column('G_dh', SA.Integer()),
                            SA.Column('G_ph', SA.Integer()),
                            SA.Column('G_pr', SA.Integer()),
-    )
+                           )
 
     AwardsManagers = SA.Table('AwardsManagers', metadata,
                               SA.Column('playerID', SA.String(64)),
@@ -56,7 +56,7 @@ def create_db():
                               SA.Column('lgID', SA.String(64)),
                               SA.Column('tie', SA.String(64)),
                               SA.Column('notes', SA.String(64)),
-    )
+                              )
 
     AwardsPlayers = SA.Table('AwardsPlayers', metadata,
                              SA.Column('playerID', SA.String(64)),
@@ -65,7 +65,7 @@ def create_db():
                              SA.Column('lgID', SA.String(64)),
                              SA.Column('tie', SA.String(64)),
                              SA.Column('notes', SA.String(64)),
-    )
+                             )
 
     AwardsShareManagers = SA.Table('AwardsShareManagers', metadata,
                                    SA.Column('awardID', SA.String(64)),
@@ -75,7 +75,7 @@ def create_db():
                                    SA.Column('pointsWon', SA.Integer()),
                                    SA.Column('pointsMax', SA.Integer()),
                                    SA.Column('votesFirst', SA.Integer()),
-    )
+                                   )
 
     AwardsSharePlayers = SA.Table('AwardsSharePlayers', metadata,
                                   SA.Column('awardID', SA.String(64)),
@@ -85,7 +85,7 @@ def create_db():
                                   SA.Column('pointsWon', SA.Integer()),
                                   SA.Column('pointsMax', SA.Integer()),
                                   SA.Column('votesFirst', SA.Integer()),
-    )
+                                  )
 
     Batting = SA.Table('Batting', metadata,
                        SA.Column('playerID', SA.String(64)),
@@ -110,7 +110,7 @@ def create_db():
                        SA.Column('SH', SA.Integer()),
                        SA.Column('SF', SA.Integer()),
                        SA.Column('GIDP', SA.Integer()),
-    )
+                       )
 
     BattingPost = SA.Table('BattingPost', metadata,
                            SA.Column('yearID', SA.Integer()),
@@ -135,7 +135,7 @@ def create_db():
                            SA.Column('SH', SA.Integer()),
                            SA.Column('SF', SA.Integer()),
                            SA.Column('GIDP', SA.Integer()),
-    )
+                           )
 
     CollegePlaying = SA.Table('CollegePlaying', metadata,
                               SA.Column('playerID', SA.String(64)),
@@ -162,7 +162,7 @@ def create_db():
                         SA.Column('SB', SA.Integer()),
                         SA.Column('CS', SA.Integer()),
                         SA.Column('ZR', SA.Integer()),
-    )
+                        )
 
     FieldingOF = SA.Table('FieldingOF', metadata,
                           SA.Column('playerID', SA.String(64)),
@@ -171,7 +171,7 @@ def create_db():
                           SA.Column('Glf', SA.Integer()),
                           SA.Column('Gcf', SA.Integer()),
                           SA.Column('Grf', SA.Integer()),
-    )
+                          )
 
     FieldingPost = SA.Table('FieldingPost', metadata,
                             SA.Column('playerID', SA.String(64)),
@@ -191,7 +191,7 @@ def create_db():
                             SA.Column('PB', SA.Integer()),
                             SA.Column('SB', SA.Integer()),
                             SA.Column('CS', SA.Integer()),
-    )
+                            )
 
     HallOfFame = SA.Table('HallOfFame', metadata,
                           SA.Column('playerID', SA.String(64)),
@@ -203,8 +203,61 @@ def create_db():
                           SA.Column('inducted', SA.String(64)),
                           SA.Column('category', SA.String(64)),
                           SA.Column('needed_note', SA.String(64)),
-    )
+                          )
 
+    Managers = SA.Table('Managers', metadata,
+                        SA.Column('playerID', SA.String(64)),
+                        SA.Column('yearID', SA.Integer()),
+                        SA.Column('teamID', SA.String(64)),
+                        SA.Column('lgID', SA.String(64)),
+                        SA.Column('inseason', SA.Integer()),
+                        SA.Column('G', SA.Integer()),
+                        SA.Column('W', SA.Integer()),
+                        SA.Column('L', SA.Integer()),
+                        SA.Column('rank', SA.Integer()),
+                        SA.Column('plyrMgr', SA.String(1)),
+                        )
+
+    ManagersHalf = SA.Table('ManagersHalf', metadata,
+                            SA.Column('playerID', SA.String(64)),
+                            SA.Column('yearID', SA.Integer()),
+                            SA.Column('teamID', SA.String(64)),
+                            SA.Column('lgID', SA.String(64)),
+                            SA.Column('inseason', SA.Integer()),
+                            SA.Column('half', SA.Integer()),
+                            SA.Column('G', SA.Integer()),
+                            SA.Column('W', SA.Integer()),
+                            SA.Column('L', SA.Integer()),
+                            SA.Column('rank', SA.Integer()),
+                            )
+
+    Master = SA.Table('Master', metadata,
+                      SA.Column('playerID', SA.String(64)),
+                      SA.Column('birthYear', SA.Integer()),
+                      SA.Column('birthMonth', SA.Integer()),
+                      SA.Column('birthDay', SA.Integer()),
+                      SA.Column('birthCountry', SA.String(64)),
+                      SA.Column('birthState', SA.String(64)),
+                      SA.Column('birthCity', SA.String(64)),
+                      SA.Column('deathYear', SA.Integer()),
+                      SA.Column('deathMonth', SA.Integer()),
+                      SA.Column('deathDay', SA.Integer()),
+                      SA.Column('deathCountry', SA.String(64)),
+                      SA.Column('deathState', SA.String(64)),
+                      SA.Column('deathCity', SA.String(64)),
+                      SA.Column('nameFirst', SA.String(64)),
+                      SA.Column('nameLast', SA.String(64)),
+                      SA.Column('nameGiven', SA.String(64)),
+                      SA.Column('weight', SA.Integer()),
+                      SA.Column('height', SA.Integer()),
+                      SA.Column('bats', SA.String(1)),
+                      SA.Column('throws', SA.String(1)),
+                      SA.Column('debut', SA.Date()),
+                      SA.Column('finalGame', SA.Date()),
+                      SA.Column('retroID', SA.String(64)),
+                      SA.Column('bbrefID', SA.String(64)),
+                      )                      
+                      
 
     engine = SA.create_engine('sqlite:///baseball.db')
     metadata.create_all(engine)
@@ -216,7 +269,7 @@ def main():
         'AllstarFull', 'Appearances', 'AwardsManagers', 'AwardsPlayers',
         'AwardsShareManagers', 'AwardsSharePlayers', 'Batting', 'BattingPost',
         'CollegePlaying', 'Fielding', 'FieldingOF', 'FieldingPost',
-        'HallOfFame',
+        'HallOfFame', 'Managers', 'ManagersHalf', 'Master',
     ]
 
     script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
