@@ -23,7 +23,7 @@ def create_db():
                            SA.Column('lgID', SA.String(64)),
                            SA.Column('GP', SA.Integer()),
                            SA.Column('startingPos', SA.Integer()),
-                       )
+    )
 
     Appearances = SA.Table('Appearances', metadata,
                            SA.Column('yearID', SA.Integer()),
@@ -47,7 +47,7 @@ def create_db():
                            SA.Column('G_dh', SA.Integer()),
                            SA.Column('G_ph', SA.Integer()),
                            SA.Column('G_pr', SA.Integer()),
-                    )
+    )
 
     AwardsManagers = SA.Table('AwardsManagers', metadata,
                               SA.Column('playerID', SA.String(64)),
@@ -56,7 +56,7 @@ def create_db():
                               SA.Column('lgID', SA.String(64)),
                               SA.Column('tie', SA.String(64)),
                               SA.Column('notes', SA.String(64)),
-                          )
+    )
 
     AwardsPlayers = SA.Table('AwardsPlayers', metadata,
                              SA.Column('playerID', SA.String(64)),
@@ -65,7 +65,7 @@ def create_db():
                              SA.Column('lgID', SA.String(64)),
                              SA.Column('tie', SA.String(64)),
                              SA.Column('notes', SA.String(64)),
-                         )
+    )
 
     AwardsShareManagers = SA.Table('AwardsShareManagers', metadata,
                                    SA.Column('awardID', SA.String(64)),
@@ -75,7 +75,7 @@ def create_db():
                                    SA.Column('pointsWon', SA.Integer()),
                                    SA.Column('pointsMax', SA.Integer()),
                                    SA.Column('votesFirst', SA.Integer()),
-                               )
+    )
 
     AwardsSharePlayers = SA.Table('AwardsSharePlayers', metadata,
                                   SA.Column('awardID', SA.String(64)),
@@ -85,7 +85,125 @@ def create_db():
                                   SA.Column('pointsWon', SA.Integer()),
                                   SA.Column('pointsMax', SA.Integer()),
                                   SA.Column('votesFirst', SA.Integer()),
-                              )
+    )
+
+    Batting = SA.Table('Batting', metadata,
+                       SA.Column('playerID', SA.String(64)),
+                       SA.Column('yearID', SA.Integer()),
+                       SA.Column('stint', SA.Integer()),
+                       SA.Column('teamID', SA.String(64)),
+                       SA.Column('lgID', SA.String(64)),
+                       SA.Column('G', SA.Integer()),
+                       SA.Column('AB', SA.Integer()),
+                       SA.Column('R', SA.Integer()),
+                       SA.Column('H', SA.Integer()),
+                       SA.Column('2B', SA.Integer()),
+                       SA.Column('3B', SA.Integer()),
+                       SA.Column('HR', SA.Integer()),
+                       SA.Column('RBI', SA.Integer()),
+                       SA.Column('SB', SA.Integer()),
+                       SA.Column('CS', SA.Integer()),
+                       SA.Column('BB', SA.Integer()),
+                       SA.Column('SO', SA.Integer()),
+                       SA.Column('IBB', SA.Integer()),
+                       SA.Column('HBP', SA.Integer()),
+                       SA.Column('SH', SA.Integer()),
+                       SA.Column('SF', SA.Integer()),
+                       SA.Column('GIDP', SA.Integer()),
+    )
+
+    BattingPost = SA.Table('BattingPost', metadata,
+                           SA.Column('yearID', SA.Integer()),
+                           SA.Column('round', SA.String(64)),
+                           SA.Column('playerID', SA.String(64)),
+                           SA.Column('teamID', SA.String(64)),
+                           SA.Column('lgID', SA.String(64)),
+                           SA.Column('G', SA.Integer()),
+                           SA.Column('AB', SA.Integer()),
+                           SA.Column('R', SA.Integer()),
+                           SA.Column('H', SA.Integer()),
+                           SA.Column('2B', SA.Integer()),
+                           SA.Column('3B', SA.Integer()),
+                           SA.Column('HR', SA.Integer()),
+                           SA.Column('RBI', SA.Integer()),
+                           SA.Column('SB', SA.Integer()),
+                           SA.Column('CS', SA.Integer()),
+                           SA.Column('BB', SA.Integer()),
+                           SA.Column('SO', SA.Integer()),
+                           SA.Column('IBB', SA.Integer()),
+                           SA.Column('HBP', SA.Integer()),
+                           SA.Column('SH', SA.Integer()),
+                           SA.Column('SF', SA.Integer()),
+                           SA.Column('GIDP', SA.Integer()),
+    )
+
+    CollegePlaying = SA.Table('CollegePlaying', metadata,
+                              SA.Column('playerID', SA.String(64)),
+                              SA.Column('schoolID', SA.String(64)),
+                              SA.Column('yearID', SA.Integer()),
+    )
+
+    Fielding = SA.Table('Fielding', metadata,
+                        SA.Column('playerID', SA.String(64)),
+                        SA.Column('yearID', SA.Integer()),
+                        SA.Column('stint', SA.Integer()),
+                        SA.Column('teamID', SA.String(64)),
+                        SA.Column('lgID', SA.String(64)),
+                        SA.Column('POS', SA.String(64)),
+                        SA.Column('G', SA.Integer()),
+                        SA.Column('GS', SA.Integer()),
+                        SA.Column('InnOuts', SA.Integer()),
+                        SA.Column('PO', SA.Integer()),
+                        SA.Column('A', SA.Integer()),
+                        SA.Column('E', SA.Integer()),
+                        SA.Column('DP', SA.Integer()),
+                        SA.Column('PB', SA.Integer()),
+                        SA.Column('WP', SA.Integer()),
+                        SA.Column('SB', SA.Integer()),
+                        SA.Column('CS', SA.Integer()),
+                        SA.Column('ZR', SA.Integer()),
+    )
+
+    FieldingOF = SA.Table('FieldingOF', metadata,
+                          SA.Column('playerID', SA.String(64)),
+                          SA.Column('yearID', SA.Integer()),
+                          SA.Column('stint', SA.Integer()),
+                          SA.Column('Glf', SA.Integer()),
+                          SA.Column('Gcf', SA.Integer()),
+                          SA.Column('Grf', SA.Integer()),
+    )
+
+    FieldingPost = SA.Table('FieldingPost', metadata,
+                            SA.Column('playerID', SA.String(64)),
+                            SA.Column('yearID', SA.Integer()),
+                            SA.Column('teamID', SA.String(64)),
+                            SA.Column('lgID', SA.String(64)),
+                            SA.Column('round', SA.String(64)),
+                            SA.Column('POS', SA.String(64)),
+                            SA.Column('G', SA.Integer()),
+                            SA.Column('GS', SA.Integer()),
+                            SA.Column('InnOuts', SA.Integer()),
+                            SA.Column('PO', SA.Integer()),
+                            SA.Column('A', SA.Integer()),
+                            SA.Column('E', SA.Integer()),
+                            SA.Column('DP', SA.Integer()),
+                            SA.Column('TP', SA.Integer()),
+                            SA.Column('PB', SA.Integer()),
+                            SA.Column('SB', SA.Integer()),
+                            SA.Column('CS', SA.Integer()),
+    )
+
+    HallOfFame = SA.Table('HallOfFame', metadata,
+                          SA.Column('playerID', SA.String(64)),
+                          SA.Column('yearID', SA.Integer()),
+                          SA.Column('votedBy', SA.String(64)),
+                          SA.Column('ballots', SA.Integer()),
+                          SA.Column('needed', SA.Integer()),
+                          SA.Column('votes', SA.Integer()),
+                          SA.Column('inducted', SA.String(64)),
+                          SA.Column('category', SA.String(64)),
+                          SA.Column('needed_note', SA.String(64)),
+    )
 
 
     engine = SA.create_engine('sqlite:///baseball.db')
@@ -96,7 +214,9 @@ def main():
 
     table_names = [ 
         'AllstarFull', 'Appearances', 'AwardsManagers', 'AwardsPlayers',
-        'AwardsShareManagers', 'AwardsSharePlayers',
+        'AwardsShareManagers', 'AwardsSharePlayers', 'Batting', 'BattingPost',
+        'CollegePlaying', 'Fielding', 'FieldingOF', 'FieldingPost',
+        'HallOfFame',
     ]
 
     script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
