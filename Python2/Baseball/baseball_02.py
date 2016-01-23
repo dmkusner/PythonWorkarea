@@ -18,8 +18,7 @@ def main():
     db_name = 'baseball_02.db'
 
     csv_files = glob.glob(data_dir + "/*.csv")
-    table_names = [os.path.basename(x) for x in csv_files]
-    table_names = [x[:-4] for x in table_names]
+    table_names = [x[:-4] for x in (os.path.basename(x) for x in csv_files)]
 
     if os.path.exists(db_name):
         os.remove(db_name)

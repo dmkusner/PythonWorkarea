@@ -11,7 +11,7 @@ import odo
 import sqlalchemy as SA
 
 
-def create_db():
+def create_db(db_name):
     metadata = SA.MetaData()
 
     AllstarFull = SA.Table('AllstarFull', metadata,
@@ -259,7 +259,7 @@ def create_db():
                       )                      
                       
 
-    engine = SA.create_engine('sqlite:///baseball.db')
+    engine = SA.create_engine('sqlite:///' + db_name)
     metadata.create_all(engine)
 # end def
 
@@ -274,12 +274,16 @@ def main():
 
     script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
     data_dir = os.sep.join(script_dir.split(os.sep)[:-2] + ['data', 'lahman_baseball'])
+    db_name = 'baseball_01.db'
 
-    create_db()
+    if os.path.exists(db_name):
+        os.remove(db_name)
+
+    create_db(db_name)
 
     for table in table_names:
         csv = os.path.join(data_dir, table + ".csv")
-        odo.odo(csv, 'sqlite:///baseball.db::' + table)
+        odo.odo(csv, 'sqlite:///' + db_name + '::' + table)
 
     sys.exit(0)
 
