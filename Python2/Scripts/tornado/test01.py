@@ -19,31 +19,35 @@ valDict = defaultdict(lambda: defaultdict(list))
 
 class indexHandler(tornado.web.RequestHandler):
     def head(self):
-        self.set_header('Task-Ids',len(valDict))
+        pass
 
 
 class listHandler(tornado.web.RequestHandler):
+    def head(self):
+        self.set_header('Task-Ids',len(valDict.keys()))
+
     def get(self):
         self.write({k:1 for k in valDict.keys()})
             
                    
-class gdHandler(tornado.web.RequestHandler):
+class dataHandler(tornado.web.RequestHandler):
+    def head(self,key):
+        self.set_header('Task-Id',key)
+        self.set_header('Task-Id-Exists', key in valDict)
+
     def get(self,key):
         self.write(valDict.get(key,{}))
-            
-                   
-class sdHandler(tornado.web.RequestHandler):
+
     def post(self,key):
         for arg_key in self.request.arguments.keys():
             valDict[key][arg_key] += self.get_arguments(arg_key)
-
             
+                   
 app = tornado.web.Application(
     handlers=[
         (r"/", indexHandler),
-        (r"/list", listHandler),
-        (r"/getData/(\w+)", gdHandler),
-        (r"/saveData/(\w+)", sdHandler),
+        (r"/data", listHandler),
+        (r"/data/(\w+)", dataHandler),
     ],
 )
 
