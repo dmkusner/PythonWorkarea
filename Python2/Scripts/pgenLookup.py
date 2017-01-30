@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 import re
 import pandas as pd
 import io
+import sys
 
 
 def read_data(infile):
@@ -36,13 +37,14 @@ def main():
     
     df_list = list(read_data(args.dataFile))
 
+    lookup = ""
     for index in args.indices:
         if len(index) != 3:
             sys.stderr.write("Error: Invalid index, must be length 3\n")
             sys.exit(1)
         (t,r,c) = index
-        lookup = df_list[int(t)].loc[r,c]
-        print lookup
+        lookup += df_list[int(t)].loc[r,c]
+    sys.stdout.write("{}\n".format(lookup))
 # end def
 
 
