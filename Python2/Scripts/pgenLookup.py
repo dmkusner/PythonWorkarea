@@ -7,6 +7,13 @@ import io
 import sys
 
 
+def table_to_df(table):
+    buf = io.BytesIO(table)
+    df = pd.read_table(buf,sep='\s+')
+    buf.close()
+    return df
+# end def
+
 def read_data(infile):
     header_pat = re.compile(r'^[ 01234567890]+$')
     with open(infile,'r') as f:
@@ -17,14 +24,12 @@ def read_data(infile):
                 # read it into a dataframe and return it
                 if header_pat.search(line):
                     if table:
-                        buf = io.BytesIO(table)
-                        yield pd.read_table(buf,sep='\s+')
+                        yield table_to_df(table)
                         table = ""
                 table += line
 
         # yield the final table
-        buf = io.BytesIO(table)
-        yield pd.read_table(buf,sep='\s+')
+        yield table_to_df(table)
         
 # end def
 
