@@ -1,0 +1,12 @@
+pgen package
+
+pgen.py:
+
+Generate 3 tables of 16 rows, 10 columns conatin 5-digit codes.
+
+pgenLookup.py:
+
+Print a password by looking up entries from a file containing
+tables created by pgen.py. Entries are specified by
+table/row/column values, like '2F2' or '019'. Table, row,
+and column values are all zero-based.
