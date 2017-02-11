@@ -47,13 +47,13 @@ def main():
     if args.seed:
         random.seed(args.seed)
 
-    for _ in range(3):
+    for _ in range(10):
         data = []
         for _ in range(16):
             data.append([generate_codes() for _ in range(10)])
 
         df = pd.DataFrame(data,index=list('0123456789ABCDEF'),columns=list('0123456789'))
-        print("{}\n\n\n".format(df))
+        print("{}\n\n".format(df))
 
 # end def
 
