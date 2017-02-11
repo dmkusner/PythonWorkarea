@@ -7,7 +7,7 @@ def read(fname):
 
 setup(
     name = "pgen",
-    version = "1.0.0",
+    version = "1.0.1",
     author = "David Kusner",
     author_email = "dmkusner@gmail.com",
     description = ("Tools for password management"),
