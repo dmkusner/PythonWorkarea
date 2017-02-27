@@ -48,6 +48,7 @@ def main():
     parser.add_argument('dataFile', help="File containing pgen tables")
     parser.add_argument('indices', metavar='trc', nargs='*', help="table/row/column index (zero-based), for example: 1B4")
     parser.add_argument('-g', '--gen_indices', metavar='int', action='store', help="generate the specified number of random indices")
+    parser.add_argument('-n', '--no_spec', action='store_true', help="Leave off special characters, only show alpha-numeric")
     args = parser.parse_args()
 
     if args.indices and args.gen_indices:
@@ -67,14 +68,17 @@ def main():
             sys.stdout.write("{}{}{} ".format(t,r,c))
         sys.stdout.write("-> ")
     
-    lookup = ""
+    pwd = ""
     for index in indices:
         if len(index) != 3:
             sys.stderr.write("Error: Invalid index, must be length 3\n")
             sys.exit(1)
         (t,r,c) = index
-        lookup += df_list[int(t)].loc[r,c]
-    sys.stdout.write("{}\n".format(lookup))
+        lookup = df_list[int(t)].loc[r,c]
+        if args.no_spec:
+            lookup = lookup[:-1]
+        pwd += lookup
+    sys.stdout.write("{}\n".format(pwd))
 # end def
 
 
