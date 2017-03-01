@@ -9,3 +9,6 @@
 
 # sqlite database files
 *.db
+
+# egg-info
+*egg-info*
