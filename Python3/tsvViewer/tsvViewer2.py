@@ -12,7 +12,8 @@ import random
 
 from csv import QUOTE_NONE
 from functools import partial
-from PyQt5.QtWidgets import QApplication, QWidget, QTableView, QAbstractItemView
+from PyQt5.QtWidgets import QApplication, QWidget, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt, QModelIndex
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 
@@ -28,16 +29,46 @@ class Table(QWidget):
         self.tsvFile = 'data.tsv'
     
         # CREATE THE TABLE
-        self.table = QTableView(self)  # SELECTING THE VIEW
-        self.table.setGeometry(0, 0, 575, 575)
-        self.model = QStandardItemModel(self)  # SELECTING THE MODEL - FRAMEWORK THAT HANDLES QUERIES AND EDITS
+        self.table = QTableView(self)
+        self.btnRows = QPushButton('Resize Rows to Contents')
+        self.btnCols = QPushButton('Resize Columns to Contents')
+        
+        self.setGeometry(100,100,1000,500)
+        h_layout = QHBoxLayout()
+        v_layout = QVBoxLayout()
+        
+        h_layout.addStretch()
+        h_layout.addWidget(self.btnRows)
+        h_layout.addWidget(self.btnCols)
+        h_layout.addStretch()
+        
+        v_layout.addWidget(self.table)
+        v_layout.addLayout(h_layout)
+        self.setLayout(v_layout)
+        
+        self.model = TableModel(filename=self.tsvFile)  # SELECTING THE MODEL - FRAMEWORK THAT HANDLES QUERIES AND EDITS
         self.table.setModel(self.model)  # SETTING THE MODEL
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.populate()
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
         self.show()
     
+        self.btnRows.clicked.connect(self.resizeRows)
+        self.btnCols.clicked.connect(self.resizeCols)
         self.table.doubleClicked.connect(self.on_click)
- 
+    # end def
+
+
+    def resizeRows(self):
+        self.table.resizeRowsToContents()        
+    # end def
+    
+    
+    def resizeCols(self):
+        self.table.resizeColumnsToContents()        
+    # end def
+    
+    
     def on_click(self, signal):
         row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
         column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
@@ -51,16 +82,51 @@ class Table(QWidget):
             'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
     # end def
     
+# end class
+
+
+#%%
+class TableModel(QAbstractTableModel):
     
-    def populate(self):
-        df = readTsv(self.tsvFile)
-        self.model.setColumnCount(len(df.columns))
-        for tsvRow in df.itertuples(index=False):
-            tableRow = [QStandardItem(x) for x in tsvRow]
-            self.model.appendRow(tableRow)
+    def __init__(self, filename):
+        super().__init__()
+        self.df = readTsv(filename)
+        self.columns = self.df.columns.tolist()
+        self.colCount = len(self.columns)
+        self.rowCount = len(self.df)
+    # end def
+    
+
+    def rowCount(self, index):
+        return self.rowCount
+    # end def
+    
+
+    def columnCount(self,index):
+        return self.colCount
+    # end def
+    
+    
+    def data(self, index, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            i = index.row()
+            j = index.column()
+            return '{}'.format(self.df.iloc[i,j])
+        else:
+            return QVariant()
+    # end def
+
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return QVariant(self.columns[col])
+        if orientation == Qt.Vertical and role == Qt.DisplayRole:
+            return QVariant(col+1)
+        return QVariant()
     # end def
 
 # end class
+    
 
 #%% main
 def main():
