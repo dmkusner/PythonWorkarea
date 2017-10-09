@@ -1,19 +1,17 @@
 #!/bin/env python3
 
 """
+Read/Display a TSV file in a spreadsheet-like GUI application.
 """
 
 #%% Imports
-import os
 import pandas as pd
-import re
 import sys
-import random
 
 from csv import QUOTE_NONE
 from functools import partial
 from PyQt5.QtWidgets import QApplication, qApp, QWidget, QMainWindow, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton, QAction, QFileDialog
-from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt, QModelIndex
+from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 
@@ -27,9 +25,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         #super().__init__()
         super(QMainWindow,self).__init__()
-
         self.initUI()
-        #self.openFile()
     # end def
 
         
@@ -95,6 +91,7 @@ class TsvViewer(QWidget):
     
         # CREATE THE TABLE
         self.table = QTableView(self)
+        self.colHeader = self.table.horizontalHeader()
         self.btnRows = QPushButton('Resize Rows to Contents')
         self.btnCols = QPushButton('Resize Columns to Contents')
         
@@ -114,6 +111,12 @@ class TsvViewer(QWidget):
         self.btnRows.clicked.connect(self.resizeRows)
         self.btnCols.clicked.connect(self.resizeCols)
         self.table.doubleClicked.connect(self.on_click)
+        self.colHeader.sectionClicked.connect(self.headerClick)
+    # end def
+
+
+    def headerClick(self, foo):
+        print("Column {} header clicked".format(foo))
     # end def
 
 
