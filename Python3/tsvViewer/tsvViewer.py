@@ -8,30 +8,96 @@ import os
 import pandas as pd
 import re
 import sys
+import random
 
 from csv import QUOTE_NONE
 from functools import partial
-from PyQt5.QtWidgets import QWidget, QPushButton, QDialog, QMainWindow, QCheckBox, QAction, qApp, QApplication, QFileDialog, QHBoxLayout, QVBoxLayout, QTableWidget, QTableWidgetItem, QAbstractItemView, QAbstractScrollArea
+from PyQt5.QtWidgets import QApplication, qApp, QWidget, QMainWindow, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton, QAction, QFileDialog
+from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt, QModelIndex
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 
 #%%
 readTsv = partial(pd.read_csv, sep='\t', dtype=object, encoding='utf-8', quoting=QUOTE_NONE)
 
 
-#%%
-class TablePlus(QWidget):
+#%% Main Window Widget
+class MainWindow(QMainWindow):
     
-    def __init__(self, r, c, tsvFile):
-        super().__init__()
+    def __init__(self):
+        #super().__init__()
+        super(QMainWindow,self).__init__()
+
+        self.initUI()
+        #self.openFile()
+    # end def
+
         
+    def initUI(self):               
+        self.initMenus()
+        
+        self.formWidget = TsvViewer()
+        self.setCentralWidget(self.formWidget)
+        
+        self.setGeometry(300, 300, 700, 400)
+        self.setWindowTitle('Main Window')
+        self.show()
+    # end def
+
+
+    def initMenus(self):
+        openAct = QAction('&Open', self)
+        openAct.setShortcut('Ctrl+O')
+        openAct.setStatusTip('Open File...')
+        openAct.triggered.connect(self.openFile)
+
+        saveAct = QAction('&Save as...', self)
+        saveAct.setShortcut('Ctrl+S')
+        saveAct.setStatusTip('Save File...')
+        saveAct.triggered.connect(self.saveFile)
+
+        exitAct = QAction('&Exit', self)        
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(qApp.quit)
+
+        self.statusBar()
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(openAct)
+        fileMenu.addAction(saveAct)
+        fileMenu.addAction(exitAct)
+    # end def
+
+
+    def openFile(self):
+        tsvFile,_ = QFileDialog.getOpenFileName(self,"Open TSV file",".","*.tsv")
+        if tsvFile:
+            self.formWidget.setTsvFile(tsvFile)
+    # end def
+
+
+    def saveFile(self):
+        pass
+    # end def
+    
+# end class
+    
+    
+#%% Main Application 
+class TsvViewer(QWidget):
+    
+    def __init__(self):
+        super().__init__()
+ 
+        self.tsvFile = None
+    
+        # CREATE THE TABLE
+        self.table = QTableView(self)
         self.btnRows = QPushButton('Resize Rows to Contents')
         self.btnCols = QPushButton('Resize Columns to Contents')
-        self.btnHideShow = QPushButton('Show/Hide Columns')
-        self.table = TableWidget(r, c, tsvFile)
-        self.initUI()
         
-        
-    def initUI(self):
         self.setGeometry(100,100,1000,500)
         h_layout = QHBoxLayout()
         v_layout = QVBoxLayout()
@@ -39,18 +105,15 @@ class TablePlus(QWidget):
         h_layout.addStretch()
         h_layout.addWidget(self.btnRows)
         h_layout.addWidget(self.btnCols)
-        h_layout.addWidget(self.btnHideShow)
         h_layout.addStretch()
         
         v_layout.addWidget(self.table)
         v_layout.addLayout(h_layout)
-        
+        self.setLayout(v_layout)
+    
         self.btnRows.clicked.connect(self.resizeRows)
         self.btnCols.clicked.connect(self.resizeCols)
-        self.btnHideShow.clicked.connect(self.table.selectDisplayCols)
-        
-        self.setLayout(v_layout)
-        self.show()
+        self.table.doubleClicked.connect(self.on_click)
     # end def
 
 
@@ -63,85 +126,89 @@ class TablePlus(QWidget):
         self.table.resizeColumnsToContents()        
     # end def
     
-# end class
-        
     
-
-#%% Table Widget
-class TableWidget(QTableWidget):
-
-    def __init__(self,r,c,tsvFile):
-        super().__init__(r,c)
-
-        self.initUI()
-        
-        self.df = readTsv(tsvFile)
-        self.displayDataFrame()        
+    def setTsvFile(self, tsvFile):
+        self.tsvFile = tsvFile
+        self.setModel()
     # end def
-
-
-    def initUI(self):
-        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)  
-        self.cellDoubleClicked.connect(self.cellDblClk)
+    
+    
+    def setModel(self):
+        self.model = TableModel(filename=self.tsvFile)
+        self.table.setModel(self.model)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
         self.show()
     # end def
-
-
-    def cellDblClk(self, a,b):
-        print(a,b)
-    # end def
-
-
-    def setDataFrame(self,df):
-        self.df = df
-    # end def
-        
     
-    def displayDataFrame(self):
-        self.clear()
-        self.setColumnCount(len(self.df.columns))
-        self.setHorizontalHeaderLabels(self.df.columns)
-        self.setRowCount(len(self.df))
-        for i,row in enumerate(self.df.itertuples(index=False)):
-            for j,item in enumerate(row):
-                self.setItem(i,j,QTableWidgetItem(item))
-        self.setColumnHidden(2,True)
-        self.setColumnHidden(2,False)
-        self.resizeColumnsToContents()
-        self.resizeRowsToContents()
-    # end def
-
-
-    def selectDisplayCols(self):
-        d = QDialog()
-        d.setWindowTitle("Select Display Columns")
-        d.setGeometry(100,100,200,200)
-        d.setModal(True)
     
-        v_layout = QVBoxLayout()
-        
-        boxes = []
-        for i,colName in enumerate(self.df.columns.tolist()):
-            box = QCheckBox(colName)
-            boxes.append(box)
-            v_layout.addWidget(box)
-        
-        d.setLayout(v_layout)
-            
-        d.exec_()
+    def on_click(self, signal):
+        row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
+        column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
+        cell_dict = self.model.itemData(signal)  # RETURNS DICT VALUE OF SIGNAL
+        cell_value = cell_dict.get(0)  # RETRIEVE VALUE FROM DICT
+ 
+        index = signal.sibling(row, 0)
+        index_dict = self.model.itemData(index)
+        index_value = index_dict.get(0)
+        print(
+            'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
     # end def
     
 # end class
 
+
+#%%
+class TableModel(QAbstractTableModel):
+    
+    def __init__(self, filename):
+        super().__init__()
+        self.df = readTsv(filename)
+        self.columns = self.df.columns.tolist()
+        self.colCount = len(self.columns)
+        self.rowCount = len(self.df)
+    # end def
+    
+
+    def rowCount(self, index):
+        return self.rowCount
+    # end def
+    
+
+    def columnCount(self,index):
+        return self.colCount
+    # end def
+    
+    
+    def data(self, index, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            i = index.row()
+            j = index.column()
+            return '{}'.format(self.df.iloc[i,j])
+        else:
+            return QVariant()
+    # end def
+
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return QVariant(self.columns[col])
+        if orientation == Qt.Vertical and role == Qt.DisplayRole:
+            return QVariant(col+1)
+        return QVariant()
+    # end def
+
+# end class
+    
 
 #%% main
 def main():
+    global app
     app = QApplication(sys.argv)
-    ex = TablePlus(0,0,'data.tsv')
-    sys.exit(app.exec_())
+    ex = MainWindow()
+    app.exec_()
+    sys.exit(0)
 # end def
 
 
