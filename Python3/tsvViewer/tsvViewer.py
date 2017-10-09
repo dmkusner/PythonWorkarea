@@ -10,7 +10,7 @@ import sys
 
 from csv import QUOTE_NONE
 from functools import partial
-from PyQt5.QtWidgets import QApplication, qApp, QWidget, QMainWindow, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton, QAction, QFileDialog
+from PyQt5.QtWidgets import QApplication, qApp, QWidget, QMainWindow, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton, QAction, QFileDialog, QMenu
 from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
@@ -90,43 +90,70 @@ class TsvViewer(QWidget):
         self.tsvFile = None
     
         # CREATE THE TABLE
-        self.table = QTableView(self)
-        self.colHeader = self.table.horizontalHeader()
+        self.tableView = QTableView(self)
+        self.colHeader = self.tableView.horizontalHeader()
         self.btnRows = QPushButton('Resize Rows to Contents')
         self.btnCols = QPushButton('Resize Columns to Contents')
+        self.showHidden = QPushButton('Show hidden columns')
         
+        self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.colHeader.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.colHeader.customContextMenuRequested.connect(self.openMenu)
+ 
         self.setGeometry(100,100,1000,500)
         h_layout = QHBoxLayout()
         v_layout = QVBoxLayout()
-        
         h_layout.addStretch()
         h_layout.addWidget(self.btnRows)
         h_layout.addWidget(self.btnCols)
+        h_layout.addWidget(self.showHidden)
         h_layout.addStretch()
-        
-        v_layout.addWidget(self.table)
+        v_layout.addWidget(self.tableView)
         v_layout.addLayout(h_layout)
         self.setLayout(v_layout)
     
         self.btnRows.clicked.connect(self.resizeRows)
         self.btnCols.clicked.connect(self.resizeCols)
-        self.table.doubleClicked.connect(self.on_click)
-        self.colHeader.sectionClicked.connect(self.headerClick)
+        self.showHidden.clicked.connect(self.showHiddenColumns)
+        self.tableView.doubleClicked.connect(self.on_click)
     # end def
 
 
-    def headerClick(self, foo):
-        print("Column {} header clicked".format(foo))
+    def openMenu(self, position):
+        colIndex = self.tableView.columnAt(position.x())
+        menu = QMenu()
+        
+        hideAct = QAction('Hide', self)
+        hideAct.setStatusTip('Hide column')
+        hideAct.triggered.connect(lambda: self.hideColumn(colIndex))
+        menu.addAction(hideAct)        
+
+        foo = menu.exec_(self.tableView.viewport().mapToGlobal(position))
+    # end def
+
+
+    def hideColumn(self, colIndex):
+        self.tableView.hideColumn(colIndex)
+    # end def
+
+    def headerClick(self, colIndex):
+        print("Column {} header clicked".format(colIndex))
     # end def
 
 
     def resizeRows(self):
-        self.table.resizeRowsToContents()        
+        self.tableView.resizeRowsToContents()        
     # end def
     
     
     def resizeCols(self):
-        self.table.resizeColumnsToContents()        
+        self.tableView.resizeColumnsToContents()        
+    # end def
+    
+
+    def showHiddenColumns(self):
+        for i in range(len(self.colHeader)):
+            self.tableView.showColumn(i)
     # end def
     
     
@@ -138,10 +165,9 @@ class TsvViewer(QWidget):
     
     def setModel(self):
         self.model = TableModel(filename=self.tsvFile)
-        self.table.setModel(self.model)
-        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.table.resizeColumnsToContents()
-        self.table.resizeRowsToContents()
+        self.tableView.setModel(self.model)
+        self.tableView.resizeColumnsToContents()
+        self.tableView.resizeRowsToContents()
         self.show()
     # end def
     
