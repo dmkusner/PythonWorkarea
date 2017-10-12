@@ -193,12 +193,9 @@ class TableModel(QAbstractTableModel):
     
     def __init__(self, filename):
         super().__init__()
-        self.chunkSize = 50
-        self.newestChunks = []
-        self.reader = readTsv(filename,chunksize=self.chunkSize)
-        self.df = None
-        df_init = readTsv(filename,nrows=1)
-        self.columns = df_init.columns.tolist()
+        self.df = readTsv(filename)
+        self.length = len(self.df)
+        self.columns = self.df.columns.tolist()
         self.colCount = len(self.columns)
         self.rowCount = 0
     # end def
@@ -234,28 +231,18 @@ class TableModel(QAbstractTableModel):
 
 
     def canFetchMore(self, index):
-        try:
-            chunk = self.reader.get_chunk()
-            self.newestChunks.append(chunk)
+        if self.length > self.rowCount:
             return True
-        except StopIteration:
-            return False
-        except:
-            raise
+        return False
     # end def
 
     
     def fetchMore(self, index):
-        for chunk in self.newestChunks:
-            count = len(chunk)
-            self.beginInsertRows(QModelIndex(), self.rowCount, self.rowCount + count - 1)
-            if self.df is None:
-                self.df = chunk
-            else:
-                self.df = pd.concat([self.df,chunk], ignore_index=True)
-            self.rowCount += count
-            self.endInsertRows()
-        self.newestChunks = []
+        remainder = self.length - self.rowCount
+        itemsToFetch = min(500,remainder)
+        self.beginInsertRows(QModelIndex(), self.rowCount, self.rowCount + itemsToFetch - 1)
+        self.rowCount += itemsToFetch
+        self.endInsertRows()
     # end def
     
 # end class
