@@ -95,7 +95,6 @@ class TsvViewer(QWidget):
         self.btnRows = QPushButton('Resize Rows to Contents')
         self.btnCols = QPushButton('Resize Columns to Contents')
         self.showHidden = QPushButton('Show hidden columns')
-        
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.colHeader.setContextMenuPolicy(Qt.CustomContextMenu)
         self.colHeader.customContextMenuRequested.connect(self.openMenu)
@@ -136,6 +135,7 @@ class TsvViewer(QWidget):
         self.tableView.hideColumn(colIndex)
     # end def
 
+
     def headerClick(self, colIndex):
         print("Column {} header clicked".format(colIndex))
     # end def
@@ -160,6 +160,7 @@ class TsvViewer(QWidget):
     def setTsvFile(self, tsvFile):
         self.tsvFile = tsvFile
         self.setModel()
+        self.showHiddenColumns()
     # end def
     
     
