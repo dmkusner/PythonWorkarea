@@ -17,6 +17,7 @@ from PyQt5.QtGui import (QStandardItemModel, QStandardItem)
 
 #%%
 readTsv = partial(pd.read_csv, sep='\t', dtype=object, encoding='utf-8', quoting=QUOTE_NONE)
+writeTsv = partial(pd.DataFrame.to_csv, sep='\t', index=False, encoding='utf-8', quoting=QUOTE_NONE)
 
 
 #%% Main Window Widget
@@ -68,14 +69,16 @@ class MainWindow(QMainWindow):
 
 
     def openFile(self):
-        tsvFile,_ = QFileDialog.getOpenFileName(self,"Open TSV file",".","*.tsv")
+        tsvFile,_ = QFileDialog.getOpenFileName(self, "Open TSV File", ".", "*.tsv")
         if tsvFile:
             self.formWidget.setTsvFile(tsvFile)
     # end def
 
 
     def saveFile(self):
-        pass
+        tsvFile, _ = QFileDialog.getSaveFileName(self, "Save TSV File", ".", "*.tsv")
+        if tsvFile:
+            self.formWidget.saveTsvFile(tsvFile)
     # end def
     
 # end class
@@ -166,6 +169,11 @@ class TsvViewer(QWidget):
     # end def
     
     
+    def saveTsvFile(self, tsvFile):
+        self.model.writeTsvFile(tsvFile)
+    # end def
+    
+    
     def setModel(self):
         self.model = TableModel(filename=self.tsvFile)
         self.tableView.setModel(self.model)
@@ -244,10 +252,11 @@ class TableModel(QAbstractTableModel):
     
     
     def headerData(self, col, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return QVariant(self.columns[col])
-        if orientation == Qt.Vertical and role == Qt.DisplayRole:
-            return QVariant(col+1)
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return QVariant(self.columns[col])
+            if orientation == Qt.Vertical:
+                return QVariant(col+1)
         return QVariant()
     # end def
 
@@ -265,6 +274,11 @@ class TableModel(QAbstractTableModel):
         self.beginInsertRows(QModelIndex(), self.rowCount, self.rowCount + itemsToFetch - 1)
         self.rowCount += itemsToFetch
         self.endInsertRows()
+    # end def
+    
+    
+    def writeTsvFile(self, tsvFile):
+        writeTsv(self.df, tsvFile)
     # end def
     
 # end class
