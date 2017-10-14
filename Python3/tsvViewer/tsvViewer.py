@@ -91,11 +91,13 @@ class TsvViewer(QWidget):
     
         # CREATE THE TABLE
         self.tableView = QTableView(self)
+        self.tableView.setEditTriggers(QAbstractItemView.DoubleClicked)
+
         self.colHeader = self.tableView.horizontalHeader()
         self.btnRows = QPushButton('Resize Rows to Contents')
         self.btnCols = QPushButton('Resize Columns to Contents')
         self.showHidden = QPushButton('Show hidden columns')
-        self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
         self.colHeader.setContextMenuPolicy(Qt.CustomContextMenu)
         self.colHeader.customContextMenuRequested.connect(self.openMenu)
  
@@ -114,7 +116,7 @@ class TsvViewer(QWidget):
         self.btnRows.clicked.connect(self.resizeRows)
         self.btnCols.clicked.connect(self.resizeCols)
         self.showHidden.clicked.connect(self.showHiddenColumns)
-        self.tableView.doubleClicked.connect(self.on_click)
+        #self.tableView.doubleClicked.connect(self.on_click)
     # end def
 
 
@@ -174,10 +176,10 @@ class TsvViewer(QWidget):
     
     
     def on_click(self, signal):
-        row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
-        column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
-        cell_dict = self.model.itemData(signal)  # RETURNS DICT VALUE OF SIGNAL
-        cell_value = cell_dict.get(0)  # RETRIEVE VALUE FROM DICT
+        row = signal.row()
+        column = signal.column()
+        cell_dict = self.model.itemData(signal)
+        cell_value = cell_dict.get(0)
  
         index = signal.sibling(row, 0)
         index_dict = self.model.itemData(index)
@@ -194,7 +196,9 @@ class TableModel(QAbstractTableModel):
     
     def __init__(self, filename):
         super().__init__()
+
         self.df = readTsv(filename)
+        self.df.fillna("", inplace=True)
         self.length = len(self.df)
         self.columns = self.df.columns.tolist()
         self.colCount = len(self.columns)
@@ -222,6 +226,23 @@ class TableModel(QAbstractTableModel):
     # end def
 
 
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable)
+    # end def
+    
+    
+    def setData(self, index, value, role=Qt.EditRole):
+        i = index.row()
+        j = index.column()
+        if not index.isValid() or not (0 <= j < self.length):
+            return False
+        self.df.iloc[i,j] = value
+        return True
+    # end def
+    
+    
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.columns[col])
