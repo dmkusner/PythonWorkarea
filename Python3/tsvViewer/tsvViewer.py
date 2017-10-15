@@ -99,7 +99,7 @@ class TsvViewer(QWidget):
         self.colHeader = self.tableView.horizontalHeader()
         self.btnRows = QPushButton('Resize Rows to Contents')
         self.btnCols = QPushButton('Resize Columns to Contents')
-        self.showHidden = QPushButton('Show hidden columns')
+        self.btnShowHidden = QPushButton('Show hidden columns')
 
         self.colHeader.setContextMenuPolicy(Qt.CustomContextMenu)
         self.colHeader.customContextMenuRequested.connect(self.openMenu)
@@ -110,7 +110,7 @@ class TsvViewer(QWidget):
         h_layout.addStretch()
         h_layout.addWidget(self.btnRows)
         h_layout.addWidget(self.btnCols)
-        h_layout.addWidget(self.showHidden)
+        h_layout.addWidget(self.btnShowHidden)
         h_layout.addStretch()
         v_layout.addWidget(self.tableView)
         v_layout.addLayout(h_layout)
@@ -118,7 +118,7 @@ class TsvViewer(QWidget):
     
         self.btnRows.clicked.connect(self.resizeRows)
         self.btnCols.clicked.connect(self.resizeCols)
-        self.showHidden.clicked.connect(self.showHiddenColumns)
+        self.btnShowHidden.clicked.connect(self.showHiddenColumns)
         #self.tableView.doubleClicked.connect(self.on_click)
     # end def
 
